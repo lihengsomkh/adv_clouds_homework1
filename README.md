@@ -257,7 +257,7 @@ docker pull lihengkh/homework:v2
   - HTTP (port 80): accessible from `0.0.0.0/0`.
 - Install and enable Docker daemon (`sudo systemctl enable --now docker`).
 - Pull and run container: `docker run -d -p 80:5000 lihengkh/homework:v2`.
-- Verify browser access via `http://<ec2-public-ip>`.
+- Verify browser access via `http://3.27.36.75  # Live deployed instance IP`.
 - Terminate EC2 instance after submission.
 
 ### 2. Step-by-Step Instructions
