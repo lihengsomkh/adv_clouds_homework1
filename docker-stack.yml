@@ -9,7 +9,7 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - APP_VERSION=v1.0
-      - APP_TITLE=Dashboard - Analytics & Leads (v1.0)
+      - APP_TITLE=Dashboard
     networks:
       - counter-net
     deploy:
