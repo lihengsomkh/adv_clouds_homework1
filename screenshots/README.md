@@ -1,9 +1,13 @@
-# Assignment Screenshots
+# Assignment Submission Screenshots
 
-Save your 4 required screenshots in this folder:
+All required verification evidence for Homework 1 is captured below:
 
-1. `screenshot-a.png`: App running locally via Docker Compose (`http://localhost:5000`).
-2. `screenshot-b.png`: Terminal output of `docker service ps app-stack_web` showing 3 active replicas.
-3. `screenshot-c.png`: Docker Hub repository UI web page showing both `v1` and `v2` tags under `lihengkh/homework`.
-4. `screenshot-d.png`: Web browser accessing `http://<ec2-public-ip>` displaying the live application on AWS EC2.
-
+| Screenshot File | Description |
+|---|---|
+| `Docker app.png` | Part 1: Modern CRM Dashboard application running locally via Docker Compose (`http://localhost:5000`). |
+| `docker image local.png` | Local images (`lihengkh/homework:v1`, `lihengkh/homework:v2`) and active containers. |
+| `docker repository.png` | Part 3: Public Docker Hub repository (`lihengkh/homework`) showing `v1` and `v2` tags. |
+| `EC2 RUNNING INSTANT.png` | Part 4: AWS EC2 management console showing active running instance (`3.27.36.75`). |
+| `AWS EC2 docker PS and status.png` | Part 4: Docker daemon status and `docker ps` running on AWS EC2. |
+| `ec2 LIVE INSTANT.png` | Part 4: Browser accessing `http://3.27.36.75` displaying the live CRM Dashboard on AWS EC2. |
+| `github.png` | Part 5: GitHub repository containing the complete codebase and project documentation. |
