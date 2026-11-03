@@ -3,439 +3,541 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} &bull; LUMEN</title>
+    <title>{{ title }} &bull; CRM Dashboard</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Space Grotesk', sans-serif; }
+        body { font-family: 'Inter', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
-        .product-card:hover .product-img { transform: scale(1.06); }
+        .donut-legend-dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-rose-500 selection:text-white">
+<body class="bg-[#F8F9FB] text-slate-800 min-h-screen flex antialiased">
 
-    <!-- Promo Banner Bar -->
-    <div class="w-full text-center py-2 text-xs font-medium {{ 'bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-700 text-white' if version == 'v1.0' else 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white' }}">
-        <span class="inline-flex items-center gap-2">
-            <i class="fa-solid fa-sparkles"></i>
-            {{ 'SPECIAL LAUNCH: 20% OFF ALL AUDIO GEAR &bull; CODE: LUMEN20' if version == 'v1.0' else 'GLOBAL CLOUD RELEASE &bull; FREE WORLDWIDE EXPRESS SHIPPING' }}
-        </span>
-    </div>
-
-    <!-- Navigation Bar -->
-    <header class="w-full border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-18 py-3 flex items-center justify-between">
-            
-            <!-- Logo -->
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-2xl flex items-center justify-center shadow-xl {{ 'bg-gradient-to-br from-indigo-500 to-pink-500' if version == 'v1.0' else 'bg-gradient-to-br from-emerald-400 to-teal-600' }}">
-                    <i class="fa-solid fa-headphones-simple text-white text-lg"></i>
-                </div>
-                <div>
-                    <span class="font-extrabold text-2xl tracking-wider text-white flex items-center gap-2">
-                        LUMEN
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest {{ 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' if version == 'v1.0' else 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' }}">
-                            {{ version }}
-                        </span>
-                    </span>
-                    <p class="text-[10px] text-slate-400 uppercase tracking-widest font-mono">Premium Audio &bull; Smart Gear</p>
+    <!-- Left Sidebar -->
+    <aside class="w-64 bg-white border-r border-slate-200/80 flex flex-col justify-between shrink-0 hidden md:flex min-h-screen p-6">
+        <div class="space-y-8">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 px-2">
+                <button class="text-slate-400 hover:text-slate-600 transition">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <div class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs tracking-wider">
+                    <i class="fa-solid fa-infinity text-sm"></i>
                 </div>
             </div>
 
-            <!-- Center Navigation Links -->
-            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
-                <a href="#products" class="hover:text-white transition">Products</a>
-                <a href="#cart" class="hover:text-white transition flex items-center gap-1.5">
-                    <span>Cart / Orders</span>
-                    <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-600 text-white" id="nav-cart-badge">{{ notes|length }}</span>
+            <!-- Nav Menu -->
+            <nav class="space-y-1.5">
+                <a href="/" class="flex items-center space-x-3.5 px-3.5 py-2.5 rounded-xl bg-[#EEF2FF] text-[#2D60FF] font-semibold text-sm transition">
+                    <i class="fa-solid fa-table-cells-large text-base"></i>
+                    <span>Dashboard</span>
                 </a>
-                <a href="#reviews" class="hover:text-white transition">Reviews</a>
-            </nav>
+                <a href="#leads" class="flex items-center space-x-3.5 px-3.5 py-2.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium text-sm transition">
+                    <i class="fa-solid fa-user-group text-base text-slate-400"></i>
+                    <span>Leads</span>
+                </a>
+                <a href="#customers" class="flex items-center space-x-3.5 px-3.5 py-2.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium text-sm transition">
+                    <i class="fa-regular fa-user text-base text-slate-400"></i>
+                    <span>Customers</span>
+                </a>
 
-            <!-- Store Hub Node & Social -->
-            <div class="flex items-center space-x-3">
-                <!-- Fulfillment Node Indicator -->
-                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono" title="Fulfillment Server Node Serving Your Session">
-                    <span class="w-2 h-2 rounded-full {{ 'bg-indigo-400' if version == 'v1.0' else 'bg-emerald-400' }} animate-pulse"></span>
-                    <span class="text-slate-400 text-[11px]">Node:</span>
-                    <span class="text-slate-200 font-bold truncate max-w-[100px]">{{ hostname }}</span>
+                <div class="pt-5 pb-2">
+                    <div class="border-t border-slate-100"></div>
                 </div>
 
-                <a href="#cart" class="px-4 py-2 rounded-xl text-xs font-bold text-white {{ 'bg-indigo-600 hover:bg-indigo-500' if version == 'v1.0' else 'bg-emerald-600 hover:bg-emerald-500' }} transition flex items-center gap-2 shadow-lg">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <span class="hidden sm:inline">My Bag</span>
-                    <span class="font-mono">({{ notes|length }})</span>
+                <a href="#proposals" class="flex items-center space-x-3.5 px-3.5 py-2.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium text-sm transition">
+                    <i class="fa-regular fa-file-lines text-base text-slate-400"></i>
+                    <span>Proposals</span>
                 </a>
+                <a href="#invoices" class="flex items-center space-x-3.5 px-3.5 py-2.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium text-sm transition">
+                    <i class="fa-solid fa-receipt text-base text-slate-400"></i>
+                    <span>Invoices</span>
+                </a>
+                <a href="#items" class="flex items-center space-x-3.5 px-3.5 py-2.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium text-sm transition">
+                    <i class="fa-solid fa-cart-shopping text-base text-slate-400"></i>
+                    <span>Items</span>
+                </a>
+
+                <div class="pt-5 pb-2">
+                    <div class="border-t border-slate-100"></div>
+                </div>
+
+                <a href="#mail" class="flex items-center space-x-3.5 px-3.5 py-2.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium text-sm transition">
+                    <i class="fa-regular fa-envelope text-base text-slate-400"></i>
+                    <span>Mail</span>
+                </a>
+                <a href="#shoebox" class="flex items-center space-x-3.5 px-3.5 py-2.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium text-sm transition">
+                    <i class="fa-solid fa-box-archive text-base text-slate-400"></i>
+                    <span>Shoebox</span>
+                </a>
+                <a href="#calendar" class="flex items-center space-x-3.5 px-3.5 py-2.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium text-sm transition">
+                    <i class="fa-regular fa-calendar text-base text-slate-400"></i>
+                    <span>Calendar</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Sidebar Bottom Items -->
+        <div class="space-y-1.5 pt-6 border-t border-slate-100">
+            <a href="#help" class="flex items-center space-x-3.5 px-3.5 py-2 text-slate-400 hover:text-slate-700 font-medium text-xs transition">
+                <i class="fa-regular fa-circle-question text-base"></i>
+                <span>Help</span>
+            </a>
+            <a href="#settings" class="flex items-center space-x-3.5 px-3.5 py-2 text-slate-400 hover:text-slate-700 font-medium text-xs transition">
+                <i class="fa-solid fa-gear text-base"></i>
+                <span>Settings</span>
+            </a>
+            <div class="pt-3 px-2 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                <span>Node: {{ hostname[:8] }}</span>
+                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold">{{ version }}</span>
             </div>
         </div>
-    </header>
+    </aside>
 
-    <!-- Main Store Content -->
-    <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-16 flex-1">
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col min-h-screen overflow-x-hidden">
 
-        <!-- Hero Section -->
-        <section class="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 p-8 sm:p-14 shadow-2xl">
-            <div class="absolute -top-40 -right-40 w-[450px] h-[450px] rounded-full {{ 'bg-indigo-600/20' if version == 'v1.0' else 'bg-emerald-500/20' }} blur-3xl pointer-events-none"></div>
-
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-                <div class="space-y-6">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold {{ 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' if version == 'v1.0' else 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' }}">
-                        <i class="fa-solid fa-crown"></i> 2026 FLAGSHIP AUDIO SERIES
-                    </span>
-                    <h1 class="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none">
-                        Sound engineered for pure emotion.
-                    </h1>
-                    <p class="text-slate-400 text-base sm:text-lg leading-relaxed max-w-xl">
-                        Immerse yourself in lossless spatial acoustic clarity. Designed with aircraft-grade titanium, active noise cancellation, and 48-hour battery longevity.
-                    </p>
-                    <div class="flex flex-wrap gap-4 pt-2">
-                        <a href="#products" class="px-6 py-3 rounded-xl font-bold text-sm text-white {{ 'bg-indigo-600 hover:bg-indigo-500' if version == 'v1.0' else 'bg-emerald-600 hover:bg-emerald-500' }} transition shadow-xl flex items-center gap-2">
-                            <i class="fa-solid fa-cart-shopping"></i> Shop Collection
-                        </a>
-                        <button onclick="pingStoreNode()" id="ping-btn" class="px-6 py-3 rounded-xl font-semibold text-sm text-slate-300 bg-slate-900 hover:bg-slate-800 border border-slate-800 transition flex items-center gap-2">
-                            <i class="fa-solid fa-rotate"></i> Check Live Stock
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Hero Product Visual Display -->
-                <div class="relative flex items-center justify-center">
-                    <div class="w-full max-w-md h-80 rounded-2xl bg-gradient-to-tr from-slate-900 to-slate-800 border border-slate-700/80 p-6 flex flex-col justify-between shadow-2xl relative overflow-hidden group">
-                        <div class="flex items-center justify-between text-xs text-slate-400">
-                            <span class="font-bold text-white text-sm">Lumen Pro Horizon ANC</span>
-                            <span class="px-2.5 py-1 rounded-full font-mono font-bold bg-rose-500/20 text-rose-300">$349 USD</span>
-                        </div>
-                        <div class="text-center py-6">
-                            <i class="fa-solid fa-headphones text-8xl {{ 'text-indigo-400' if version == 'v1.0' else 'text-emerald-400' }} group-hover:scale-110 transition duration-300 drop-shadow-[0_10px_25px_rgba(99,102,241,0.3)]"></i>
-                        </div>
-                        <form action="/add" method="POST" class="flex gap-2">
-                            <input type="hidden" name="item" value="Lumen Pro Horizon ANC Headphones ($349)">
-                            <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-white/10 hover:bg-white/20 border border-white/20 transition flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-plus"></i> Quick Add to Bag
-                            </button>
-                        </form>
-                    </div>
-                </div>
+        <!-- Top Header Bar -->
+        <header class="w-full bg-white border-b border-slate-200/80 px-6 sm:px-10 h-20 flex items-center justify-between shrink-0">
+            <div class="flex items-center space-x-4">
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold {{ 'bg-blue-50 text-blue-600 border border-blue-200' if version == 'v1.0' else 'bg-emerald-50 text-emerald-600 border border-emerald-200' }}">
+                    {{ 'Release v1.0' if version == 'v1.0' else 'Release v2.0 &bull; Cloud' }}
+                </span>
             </div>
-        </section>
 
-        <!-- Live Store Real-Time Metrics Strip -->
-        <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Header Right: Action Button & Cluster Info -->
+            <div class="flex items-center space-x-3">
+                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-600 font-mono" title="Serving Cluster Worker Hostname">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Node: <strong class="text-slate-900">{{ hostname }}</strong></span>
+                </div>
+                
+                <!-- Create Dropdown Trigger -->
+                <button onclick="toggleModal(true)" 
+                        class="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#2D60FF] hover:bg-blue-600 active:scale-95 transition shadow-sm flex items-center gap-2">
+                    <span>Create</span>
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Body Area -->
+        <main class="p-6 sm:p-10 space-y-8 flex-1">
             
-            <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-lg">
-                <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Store Shoppers Today</span>
-                <div class="text-3xl font-black text-white mt-1" id="metric-visits">{{ visits }}</div>
-                <span class="text-[11px] text-slate-500 mt-1 block">Live unique visitor count</span>
+            <!-- Tab Controls & Period Dropdown -->
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <div class="flex items-center space-x-8 text-sm font-medium">
+                    <button class="text-slate-400 hover:text-slate-600 pb-3 transition">Sales</button>
+                    <button class="text-[#2D60FF] font-semibold border-b-2 border-[#2D60FF] pb-3 -mb-3 transition">Leads</button>
+                </div>
+                <div class="flex items-center gap-1.5 text-xs text-slate-500 font-medium cursor-pointer hover:text-slate-700">
+                    <i class="fa-regular fa-calendar text-slate-400"></i>
+                    <span>last 6 months</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                </div>
             </div>
 
-            <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-lg">
-                <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Bagged Orders</span>
-                <div class="text-3xl font-black text-rose-400 mt-1" id="metric-cart-count">{{ notes|length }}</div>
-                <span class="text-[11px] text-slate-500 mt-1 block">Saved in live order store</span>
-            </div>
-
-            <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-lg">
-                <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Serving Warehouse Node</span>
-                <div class="text-lg font-mono font-bold text-purple-300 mt-1 truncate" id="metric-hostname">{{ hostname }}</div>
-                <span class="text-[11px] text-slate-500 mt-1 block">Dispatched via Edge Cluster</span>
-            </div>
-
-            <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-lg">
-                <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Inventory Sync</span>
-                <div class="text-lg font-bold text-emerald-400 mt-1 flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    {% if redis_connected %}Real-time Sync{% else %}Standalone Mode{% endif %}
-                </div>
-                <span class="text-[11px] text-slate-500 mt-1 block font-mono">Uptime: {{ uptime_str }}</span>
-            </div>
-
-        </section>
-
-        <!-- Product Catalog Section -->
-        <section id="products" class="space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800/80 pb-4">
-                <div>
-                    <h2 class="text-3xl font-black text-white tracking-tight">Curated Gear</h2>
-                    <p class="text-sm text-slate-400">Select any item below to add it directly to your shopping bag.</p>
-                </div>
-                <span class="text-xs text-slate-400 font-mono">6 Products Available &bull; In Stock</span>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                <!-- Product 1 -->
-                <div class="product-card bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between space-y-5 transition">
-                    <div class="space-y-3">
-                        <div class="h-44 rounded-2xl bg-slate-950 flex items-center justify-center relative overflow-hidden">
-                            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Audio</span>
-                            <i class="fa-solid fa-headphones-simple text-6xl text-indigo-400 product-img transition duration-300"></i>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-bold text-white">Lumen Studio Wireless</h3>
-                            <span class="text-lg font-black text-white font-mono">$289</span>
-                        </div>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            Studio-grade dynamic 50mm beryllium drivers with immersive spatial audio tracking.
-                        </p>
+            <!-- Top Row: Funnel count & Sources Donut Chart -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Funnel count (7 cols) -->
+                <div class="lg:col-span-7 bg-white rounded-2xl p-6 sm:p-7 border border-slate-100 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-sm font-bold text-slate-900">Funnel count</h2>
                     </div>
-                    <form action="/add" method="POST">
-                        <input type="hidden" name="item" value="Lumen Studio Wireless ($289)">
-                        <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-slate-800 hover:bg-indigo-600 transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-cart-plus"></i> Add to Bag
-                        </button>
-                    </form>
-                </div>
 
-                <!-- Product 2 -->
-                <div class="product-card bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between space-y-5 transition">
-                    <div class="space-y-3">
-                        <div class="h-44 rounded-2xl bg-slate-950 flex items-center justify-center relative overflow-hidden">
-                            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Wearable</span>
-                            <i class="fa-solid fa-stopwatch-20 text-6xl text-emerald-400 product-img transition duration-300"></i>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-bold text-white">Aura Chrono Smartwatch</h3>
-                            <span class="text-lg font-black text-white font-mono">$329</span>
-                        </div>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            Titanium chassis, sapphire crystal display, ECG monitoring, and 14-day battery life.
-                        </p>
+                    <!-- Big Active Leads Number -->
+                    <div class="flex items-baseline space-x-2">
+                        <span class="text-4xl font-extrabold text-slate-900" id="active-leads-count">{{ 600 + (notes|length * 5) }}</span>
+                        <span class="text-xs text-slate-500 font-medium">active leads</span>
                     </div>
-                    <form action="/add" method="POST">
-                        <input type="hidden" name="item" value="Aura Chrono Smartwatch ($329)">
-                        <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-slate-800 hover:bg-emerald-600 transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-cart-plus"></i> Add to Bag
-                        </button>
-                    </form>
-                </div>
 
-                <!-- Product 3 -->
-                <div class="product-card bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between space-y-5 transition">
-                    <div class="space-y-3">
-                        <div class="h-44 rounded-2xl bg-slate-950 flex items-center justify-center relative overflow-hidden">
-                            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-purple-500/20 text-purple-300 border border-purple-500/30">Audio</span>
-                            <i class="fa-solid fa-podcast text-6xl text-purple-400 product-img transition duration-300"></i>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-bold text-white">Aero Pods Pro True Wireless</h3>
-                            <span class="text-lg font-black text-white font-mono">$179</span>
-                        </div>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            Ultra-compact in-ear monitors with custom silicone seals and IPX7 water resistance.
-                        </p>
+                    <!-- Segmented Multi-Color Progress Bar -->
+                    <div class="w-full h-2 rounded-full overflow-hidden flex bg-slate-100">
+                        <div class="bg-[#EE5A52] h-full" style="width: 45%;"></div>
+                        <div class="bg-[#F4A261] h-full" style="width: 25%;"></div>
+                        <div class="bg-[#1F3A60] h-full" style="width: 15%;"></div>
+                        <div class="bg-[#88B795] h-full" style="width: 10%;"></div>
+                        <div class="bg-[#8338EC] h-full" style="width: 5%;"></div>
                     </div>
-                    <form action="/add" method="POST">
-                        <input type="hidden" name="item" value="Aero Pods Pro True Wireless ($179)">
-                        <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-slate-800 hover:bg-purple-600 transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-cart-plus"></i> Add to Bag
-                        </button>
-                    </form>
-                </div>
 
-                <!-- Product 4 -->
-                <div class="product-card bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between space-y-5 transition">
-                    <div class="space-y-3">
-                        <div class="h-44 rounded-2xl bg-slate-950 flex items-center justify-center relative overflow-hidden">
-                            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30">Desk Setup</span>
-                            <i class="fa-solid fa-keyboard text-6xl text-amber-400 product-img transition duration-300"></i>
+                    <!-- Funnel Stage Rows -->
+                    <div class="space-y-4 pt-2">
+                        <div class="flex items-center justify-between text-xs text-slate-700">
+                            <div class="flex items-center space-x-3 w-40">
+                                <span class="donut-legend-dot bg-[#EE5A52]"></span>
+                                <span class="font-medium">Discovery</span>
+                            </div>
+                            <span class="text-slate-500 font-mono">200</span>
+                            <span class="text-slate-500 font-mono">$ 200</span>
+                            <span class="text-slate-400">2 days</span>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-bold text-white">Titan Apex Mechanical Board</h3>
-                            <span class="text-lg font-black text-white font-mono">$199</span>
+
+                        <div class="flex items-center justify-between text-xs text-slate-700">
+                            <div class="flex items-center space-x-3 w-40">
+                                <span class="donut-legend-dot bg-[#F4A261]"></span>
+                                <span class="font-medium">Qualified</span>
+                            </div>
+                            <span class="text-slate-500 font-mono">100</span>
+                            <span class="text-slate-500 font-mono">$ 100</span>
+                            <span class="text-slate-400">2 days</span>
                         </div>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            Hot-swappable lubricated switches, CNC aluminum body, and RGB per-key sound-dampened casing.
-                        </p>
+
+                        <div class="flex items-center justify-between text-xs text-slate-700">
+                            <div class="flex items-center space-x-3 w-40">
+                                <span class="donut-legend-dot bg-[#1F3A60]"></span>
+                                <span class="font-medium">In conversation</span>
+                            </div>
+                            <span class="text-slate-500 font-mono">50</span>
+                            <span class="text-slate-500 font-mono">$ 100</span>
+                            <span class="text-slate-400 relative group cursor-pointer">
+                                4 days
+                                <span class="absolute -top-7 -left-16 bg-slate-900 text-white text-[10px] px-2 py-0.5 rounded shadow opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap">
+                                    average time on this stage
+                                </span>
+                            </span>
+                        </div>
+
+                        <div class="flex items-center justify-between text-xs text-slate-700">
+                            <div class="flex items-center space-x-3 w-40">
+                                <span class="donut-legend-dot bg-[#88B795]"></span>
+                                <span class="font-medium">Negotiations</span>
+                            </div>
+                            <span class="text-slate-500 font-mono">20</span>
+                            <span class="text-slate-500 font-mono">$ 50</span>
+                            <span class="text-slate-400">8 days</span>
+                        </div>
+
+                        <div class="flex items-center justify-between text-xs text-slate-700">
+                            <div class="flex items-center space-x-3 w-40">
+                                <span class="donut-legend-dot bg-[#8338EC]"></span>
+                                <span class="font-medium">Closed won</span>
+                            </div>
+                            <span class="text-slate-500 font-mono">20</span>
+                            <span class="text-slate-500 font-mono">$ 50</span>
+                            <span class="text-slate-400">10 days</span>
+                        </div>
                     </div>
-                    <form action="/add" method="POST">
-                        <input type="hidden" name="item" value="Titan Apex Mechanical Board ($199)">
-                        <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-slate-800 hover:bg-amber-600 transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-cart-plus"></i> Add to Bag
-                        </button>
-                    </form>
                 </div>
 
-                <!-- Product 5 -->
-                <div class="product-card bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between space-y-5 transition">
-                    <div class="space-y-3">
-                        <div class="h-44 rounded-2xl bg-slate-950 flex items-center justify-center relative overflow-hidden">
-                            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">Power</span>
-                            <i class="fa-solid fa-bolt text-6xl text-cyan-400 product-img transition duration-300"></i>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-bold text-white">Omni Pad Fast Charger</h3>
-                            <span class="text-lg font-black text-white font-mono">$79</span>
-                        </div>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            Triple-coil 45W Qi wireless charging station with Italian leather surface.
-                        </p>
-                    </div>
-                    <form action="/add" method="POST">
-                        <input type="hidden" name="item" value="Omni Pad Fast Charger ($79)">
-                        <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-slate-800 hover:bg-cyan-600 transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-cart-plus"></i> Add to Bag
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Product 6 -->
-                <div class="product-card bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between space-y-5 transition">
-                    <div class="space-y-3">
-                        <div class="h-44 rounded-2xl bg-slate-950 flex items-center justify-center relative overflow-hidden">
-                            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-rose-500/20 text-rose-300 border border-rose-500/30">Audio</span>
-                            <i class="fa-solid fa-volume-high text-6xl text-rose-400 product-img transition duration-300"></i>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-bold text-white">Apex Hi-Fi Studio Monitor</h3>
-                            <span class="text-lg font-black text-white font-mono">$450</span>
-                        </div>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            Bi-amplified reference studio speaker with acoustic waveguide and crystal treble fidelity.
-                        </p>
-                    </div>
-                    <form action="/add" method="POST">
-                        <input type="hidden" name="item" value="Apex Hi-Fi Studio Monitor ($450)">
-                        <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-slate-800 hover:bg-rose-600 transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-cart-plus"></i> Add to Bag
-                        </button>
-                    </form>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- Shopping Bag / Orders Section (Data Persistence Feature) -->
-        <section id="cart" class="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-4">
-            
-            <!-- Left: Custom Order Input -->
-            <div class="lg:col-span-1 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
-                <div>
-                    <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-cart-shopping text-rose-500"></i>
-                        Custom Order or Pre-order
-                    </h3>
-                    <p class="text-xs text-slate-400 mt-1">
-                        Looking for a custom edition or gift order? Type your item below to save it into your order bag.
-                    </p>
-                </div>
-
-                <form action="/add" method="POST" class="space-y-3">
+                <!-- Sources Donut Chart (5 cols) -->
+                <div class="lg:col-span-5 bg-white rounded-2xl p-6 sm:p-7 border border-slate-100 shadow-[0_2px_12px_rgba(0,0,0,0.03)] flex flex-col justify-between space-y-6">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Item Name &amp; Spec</label>
-                        <input type="text" name="item" required placeholder="e.g. Custom Engraved Titanium Earbuds..." 
-                               class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent">
-                    </div>
-                    <button type="submit" 
-                            class="w-full py-3 rounded-xl font-bold text-sm text-white bg-rose-600 hover:bg-rose-500 active:scale-95 transition shadow-lg flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-plus"></i> Add Custom Item to Bag
-                    </button>
-                </form>
+                        <h2 class="text-sm font-bold text-slate-900 mb-4">Sources</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                            <!-- Donut Canvas -->
+                            <div class="relative w-40 h-40 mx-auto">
+                                <canvas id="sourcesChart"></canvas>
+                            </div>
 
-                <div class="pt-3 border-t border-slate-800">
-                    <form action="/clear" method="POST" onsubmit="return confirm('Empty all items from your shopping bag?');">
-                        <button type="submit" class="w-full py-2 rounded-xl text-xs text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/30 transition flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-trash-can text-xs"></i> Empty Shopping Bag
-                        </button>
-                    </form>
+                            <!-- Donut Legend & Values -->
+                            <div class="space-y-3 text-xs">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="donut-legend-dot bg-[#EE5A52]"></span>
+                                        <span class="text-slate-600 font-medium">Clutch</span>
+                                    </div>
+                                    <span class="font-mono text-slate-700">$ 3 000</span>
+                                    <span class="text-slate-400 font-mono">50%</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="donut-legend-dot bg-[#F4A261]"></span>
+                                        <span class="text-slate-600 font-medium">Behance</span>
+                                    </div>
+                                    <span class="font-mono text-slate-700">$ 1 000</span>
+                                    <span class="text-slate-400 font-mono">40%</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="donut-legend-dot bg-[#1F3A60]"></span>
+                                        <span class="text-slate-600 font-medium">Instagram</span>
+                                    </div>
+                                    <span class="font-mono text-slate-700">$ 1 000</span>
+                                    <span class="text-slate-400 font-mono">10%</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="donut-legend-dot bg-[#88B795]"></span>
+                                        <span class="text-slate-600 font-medium">Dribbble</span>
+                                    </div>
+                                    <span class="font-mono text-slate-700">$ 1 000</span>
+                                    <span class="text-slate-400 font-mono">10%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Pill Toggles -->
+                    <div class="flex items-center justify-end space-x-2 text-[11px] pt-4 border-t border-slate-100">
+                        <button class="px-2.5 py-1 text-slate-400 hover:text-slate-600 transition">Leads came</button>
+                        <button class="px-2.5 py-1 rounded bg-[#EEF2FF] text-[#2D60FF] font-semibold transition">Leads Converted</button>
+                        <button class="px-2.5 py-1 text-slate-400 hover:text-slate-600 transition">Total deals size</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Middle Section: Leads tracking Double Spline Curve Chart -->
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-100 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-6">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-sm font-bold text-slate-900">Leads tracking</h2>
+                    <div class="flex items-center gap-1.5 text-xs text-slate-500 font-medium cursor-pointer">
+                        <span>last 6 months</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                    </div>
+                </div>
+
+                <!-- Big Summary Closed vs Lost Stats -->
+                <div class="flex items-baseline space-x-8">
+                    <div class="flex items-baseline space-x-2">
+                        <span class="text-3xl font-extrabold text-slate-900">680</span>
+                        <span class="text-xs text-slate-500 font-medium">total closed</span>
+                    </div>
+                    <div class="flex items-baseline space-x-2">
+                        <span class="text-3xl font-extrabold text-slate-900">70</span>
+                        <span class="text-xs text-slate-500 font-medium">total lost</span>
+                    </div>
+                </div>
+
+                <!-- Spline Line Chart Canvas -->
+                <div class="relative w-full h-72">
+                    <canvas id="leadsTrackingChart"></canvas>
+                </div>
+
+                <!-- Chart Legend Bottom -->
+                <div class="flex items-center space-x-6 text-xs text-slate-600 pt-2">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-sm bg-[#1E7883]"></span>
+                        <span class="font-medium">Closed won</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-sm bg-[#C92A42]"></span>
+                        <span class="font-medium">Closed lost</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Right: Current Bag / Placed Orders -->
-            <div class="lg:col-span-2 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                    <div>
-                        <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-bag-shopping {{ 'text-indigo-400' if version == 'v1.0' else 'text-emerald-400' }}"></i>
-                            Your Shopping Bag (<span id="bag-count">{{ notes|length }}</span>)
-                        </h3>
-                        <p class="text-xs text-slate-400">All items are saved securely in your persisted session.</p>
+            <!-- Bottom Row: Reasons of leads lost & Other data -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Reasons of leads lost (7 cols) -->
+                <div class="lg:col-span-7 bg-white rounded-2xl p-6 sm:p-7 border border-slate-100 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-6">
+                    <h2 class="text-sm font-bold text-slate-900">Reasons of leads lost</h2>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="space-y-1">
+                            <div class="text-2xl font-bold text-slate-900">40%</div>
+                            <p class="text-xs text-slate-500 leading-relaxed">The proposal is unclear</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="text-2xl font-bold text-slate-900">20%</div>
+                            <p class="text-xs text-slate-500 leading-relaxed">However venture pursuit</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="text-2xl font-bold text-slate-900">10%</div>
+                            <p class="text-xs text-slate-500 leading-relaxed">Other</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="text-2xl font-bold text-slate-900">30%</div>
+                            <p class="text-xs text-slate-500 leading-relaxed">The proposal is unclear</p>
+                        </div>
                     </div>
-                    <span class="text-xs font-mono px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 font-semibold">
-                        Cart Sync: <strong class="text-emerald-400">Active</strong>
-                    </span>
+                </div>
+
+                <!-- Other data (5 cols) -->
+                <div class="lg:col-span-5 bg-white rounded-2xl p-6 sm:p-7 border border-slate-100 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-6">
+                    <h2 class="text-sm font-bold text-slate-900">Other data</h2>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="space-y-1">
+                            <div class="text-2xl font-bold text-slate-900">900</div>
+                            <p class="text-[11px] text-slate-500 leading-tight">total leads count</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="text-2xl font-bold text-slate-900">12</div>
+                            <p class="text-[11px] text-slate-500 leading-tight">days in average to convert lead</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="text-2xl font-bold text-slate-900">30</div>
+                            <p class="text-[11px] text-slate-500 leading-tight">inactive leads <i class="fa-regular fa-circle-question text-[10px] text-slate-400"></i></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Persisted Leads Section (Data Persistence Feature for Homework) -->
+            <div class="bg-white rounded-2xl p-6 sm:p-7 border border-slate-100 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-database text-blue-500"></i>
+                            Live Deals &amp; Lead Entries (Persisted in Redis: {{ notes|length }})
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Entries persist in the backing database across container restarts.</p>
+                    </div>
+                    <form action="/clear" method="POST" onsubmit="return confirm('Clear custom leads?');">
+                        <button type="submit" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition">
+                            Reset Custom Leads
+                        </button>
+                    </form>
                 </div>
 
                 {% if notes %}
-                <ul class="divide-y divide-slate-800 bg-slate-950/70 rounded-2xl border border-slate-800 overflow-hidden max-h-96 overflow-y-auto">
+                <ul class="divide-y divide-slate-100 text-xs">
                     {% for note in notes %}
-                    <li class="px-5 py-4 text-sm flex items-center justify-between hover:bg-slate-900/50 transition">
+                    <li class="py-2.5 flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-xs text-rose-400 font-bold">
-                                <i class="fa-solid fa-box"></i>
-                            </div>
-                            <div>
-                                <span class="text-slate-100 font-bold block">{{ note }}</span>
-                                <span class="text-[11px] text-slate-500">In Stock &bull; Ready for Dispatch</span>
-                            </div>
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span class="font-semibold text-slate-800">{{ note }}</span>
                         </div>
-                        <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-                            Saved in Bag
-                        </span>
+                        <span class="text-slate-400 font-mono text-[11px]">Saved in Redis Database</span>
                     </li>
                     {% endfor %}
                 </ul>
-                <div class="pt-2 flex items-center justify-between">
-                    <span class="text-xs text-slate-400">Total Items: <strong class="text-white">{{ notes|length }}</strong></span>
-                    <button onclick="alert('Checkout demo completed! All items confirmed.');" class="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition shadow-lg">
-                        Proceed to Checkout &rarr;
-                    </button>
-                </div>
                 {% else %}
-                <div class="py-16 text-center text-slate-500 space-y-3">
-                    <div class="w-16 h-16 rounded-full bg-slate-950 flex items-center justify-center mx-auto text-2xl text-slate-600">
-                        <i class="fa-solid fa-cart-arrow-down"></i>
-                    </div>
-                    <p class="text-base font-semibold text-slate-300">Your shopping bag is empty.</p>
-                    <p class="text-xs text-slate-500">Click "Add to Bag" on any of the products above to test cart persistence.</p>
-                </div>
+                <p class="text-xs text-slate-400 italic py-2">No custom lead entries added yet. Click "Create" above to add new deals!</p>
                 {% endif %}
             </div>
 
-        </section>
+        </main>
+    </div>
 
-    </main>
+    <!-- Create New Lead Modal -->
+    <div id="createModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-5 animate-fadeIn">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-900 text-base">Create New Lead / Deal</h3>
+                <button onclick="toggleModal(false)" class="text-slate-400 hover:text-slate-600 text-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
 
-    <!-- Footer -->
-    <footer class="w-full border-t border-slate-800/80 bg-slate-950/90 py-10 text-center text-xs text-slate-500 space-y-3">
-        <div class="flex items-center justify-center space-x-6 text-sm">
-            <a href="https://github.com/lihengsomkh/adv_clouds_homework1" target="_blank" class="hover:text-slate-300 transition flex items-center gap-1.5">
-                <i class="fa-brands fa-github"></i> GitHub Source
-            </a>
-            <a href="https://hub.docker.com/r/lihengkh/homework/tags" target="_blank" class="hover:text-slate-300 transition flex items-center gap-1.5">
-                <i class="fa-brands fa-docker text-blue-400"></i> Docker Hub Registry
-            </a>
+            <form action="/add" method="POST" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Lead / Opportunity Title</label>
+                    <input type="text" name="item" required placeholder="e.g. Acme Corp Enterprise Deal ($15,000)" 
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#2D60FF] focus:bg-white">
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="toggleModal(false)" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-[#2D60FF] hover:bg-blue-600 transition shadow">
+                        Save Lead
+                    </button>
+                </div>
+            </form>
         </div>
-        <p>&copy; 2026 LUMEN Technologies Inc. &bull; All Rights Reserved</p>
-        <p class="text-[11px] font-mono text-slate-600">
-            Node Server: <span class="text-slate-400">{{ hostname }}</span> &bull; Edition: <span class="text-slate-400">{{ version }}</span>
-        </p>
-    </footer>
+    </div>
 
-    <!-- Interactive Node Ping Script -->
+    <!-- Charts Initialization Script -->
     <script>
-        async function pingStoreNode() {
-            const btn = document.getElementById('ping-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> Checking Stock...';
-
-            try {
-                const res = await fetch('/api/info');
-                const data = await res.json();
-                document.getElementById('metric-visits').innerText = data.visits;
-                document.getElementById('metric-hostname').innerText = data.hostname;
-                alert(`Stock sync verified! Active Node: ${data.hostname} | Visits: ${data.visits}`);
-            } catch (err) {
-                console.error("Ping error:", err);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Check Live Stock';
+        function toggleModal(show) {
+            const modal = document.getElementById('createModal');
+            if (show) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
             }
         }
+
+        // 1. Sources Donut Chart
+        const ctxDonut = document.getElementById('sourcesChart').getContext('2d');
+        new Chart(ctxDonut, {
+            type: 'doughnut',
+            data: {
+                labels: ['Clutch', 'Behance', 'Instagram', 'Dribbble'],
+                datasets: [{
+                    data: [50, 40, 10, 10],
+                    backgroundColor: ['#EE5A52', '#F4A261', '#1F3A60', '#88B795'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // 2. Leads Tracking Spline Chart
+        const ctxSpline = document.getElementById('leadsTrackingChart').getContext('2d');
+        new Chart(ctxSpline, {
+            type: 'line',
+            data: {
+                labels: ['March', 'April', 'May', 'June', 'July', 'August'],
+                datasets: [
+                    {
+                        label: 'Closed won',
+                        data: [85, 22, 60, 72, 90, 48],
+                        borderColor: '#1E7883',
+                        backgroundColor: 'rgba(30, 120, 131, 0.04)',
+                        tension: 0.45,
+                        fill: true,
+                        pointBackgroundColor: '#1E7883',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5
+                    },
+                    {
+                        label: 'Closed lost',
+                        data: [70, 40, 95, 12, 38, 98],
+                        borderColor: '#C92A42',
+                        backgroundColor: 'rgba(201, 42, 66, 0.04)',
+                        tension: 0.45,
+                        fill: true,
+                        pointBackgroundColor: '#C92A42',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 100,
+                        ticks: {
+                            stepSize: 20,
+                            font: { size: 10, family: 'Inter' },
+                            color: '#94a3b8'
+                        },
+                        grid: {
+                            color: '#f1f5f9'
+                        },
+                        border: { display: false }
+                    },
+                    x: {
+                        ticks: {
+                            font: { size: 11, family: 'Inter' },
+                            color: '#94a3b8'
+                        },
+                        grid: { display: false },
+                        border: { display: false }
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>

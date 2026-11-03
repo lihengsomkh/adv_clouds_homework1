@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 # Configuration
 APP_VERSION = os.getenv("APP_VERSION", "v1.0")
-APP_TITLE = os.getenv("APP_TITLE", "LUMEN - Premium Audio & Smart Gear")
+APP_TITLE = os.getenv("APP_TITLE", "Dashboard - Analytics & Leads")
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 REDIS_DB = int(os.getenv("REDIS_DB", 0))

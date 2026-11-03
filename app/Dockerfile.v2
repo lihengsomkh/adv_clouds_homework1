@@ -4,7 +4,7 @@ WORKDIR /app
 
 ENV PYTHONUNBUFFERED=1 \
     APP_VERSION=v2.0 \
-    APP_TITLE="LUMEN - Premium Audio & Smart Gear (v2.0)" \
+    APP_TITLE="Dashboard - Analytics & Leads (v2.0)" \
     REDIS_HOST=redis \
     REDIS_PORT=6379
 
