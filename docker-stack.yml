@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  web:
+    image: lihengkh/homework:v1
+    ports:
+      - "5000:5000"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - APP_VERSION=v1.0
+      - APP_TITLE=Cloud Counter - Docker Swarm Cluster (v1.0)
+    networks:
+      - counter-net
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 128M
+        reservations:
+          cpus: "0.10"
+          memory: 64M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - counter-net
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64M
+        reservations:
+          cpus: "0.05"
+          memory: 32M
+      restart_policy:
+        condition: on-failure
+
+networks:
+  counter-net:
+    driver: overlay
+
+volumes:
+  redis_data:
+
