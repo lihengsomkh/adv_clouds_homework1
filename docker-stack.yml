@@ -9,7 +9,7 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - APP_VERSION=v1.0
-      - APP_TITLE=Cloud Counter - Docker Swarm Cluster (v1.0)
+      - APP_TITLE=DevPulse - Engineering & Technology Journal (v1.0)
     networks:
       - counter-net
     deploy:

@@ -4,7 +4,7 @@ WORKDIR /app
 
 ENV PYTHONUNBUFFERED=1 \
     APP_VERSION=v2.0 \
-    APP_TITLE="Cloud Counter - AWS EC2 Cloud Release (v2.0)" \
+    APP_TITLE="DevPulse - Engineering & Technology Journal (v2.0)" \
     REDIS_HOST=redis \
     REDIS_PORT=6379
 
