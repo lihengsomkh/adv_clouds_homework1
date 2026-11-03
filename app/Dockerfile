@@ -4,7 +4,7 @@ WORKDIR /app
 
 ENV PYTHONUNBUFFERED=1 \
     APP_VERSION=v1.0 \
-    APP_TITLE="DevPulse - Engineering & Technology Journal (v1.0)" \
+    APP_TITLE="LUMEN - Premium Audio & Smart Gear (v1.0)" \
     REDIS_HOST=redis \
     REDIS_PORT=6379
 

@@ -3,400 +3,437 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} &bull; DevPulse Journal</title>
+    <title>{{ title }} &bull; LUMEN</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        code, .font-mono { font-family: 'JetBrains Mono', monospace; }
+        body { font-family: 'Space Grotesk', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .product-card:hover .product-img { transform: scale(1.06); }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-600 selection:text-white">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-rose-500 selection:text-white">
 
-    <!-- Top Navigation Bar -->
+    <!-- Promo Banner Bar -->
+    <div class="w-full text-center py-2 text-xs font-medium {{ 'bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-700 text-white' if version == 'v1.0' else 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white' }}">
+        <span class="inline-flex items-center gap-2">
+            <i class="fa-solid fa-sparkles"></i>
+            {{ 'SPECIAL LAUNCH: 20% OFF ALL AUDIO GEAR &bull; CODE: LUMEN20' if version == 'v1.0' else 'GLOBAL CLOUD RELEASE &bull; FREE WORLDWIDE EXPRESS SHIPPING' }}
+        </span>
+    </div>
+
+    <!-- Navigation Bar -->
     <header class="w-full border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-18 py-3 flex items-center justify-between">
+            
+            <!-- Logo -->
             <div class="flex items-center space-x-3">
-                <div class="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg {{ 'bg-gradient-to-tr from-indigo-600 to-violet-500' if version == 'v1.0' else 'bg-gradient-to-tr from-emerald-600 to-teal-400' }}">
-                    <i class="fa-solid fa-bolt-lightning text-white text-base"></i>
+                <div class="w-10 h-10 rounded-2xl flex items-center justify-center shadow-xl {{ 'bg-gradient-to-br from-indigo-500 to-pink-500' if version == 'v1.0' else 'bg-gradient-to-br from-emerald-400 to-teal-600' }}">
+                    <i class="fa-solid fa-headphones-simple text-white text-lg"></i>
                 </div>
                 <div>
-                    <span class="font-extrabold text-white text-lg tracking-tight flex items-center gap-2">
-                        DevPulse
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider {{ 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' if version == 'v1.0' else 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' }}">
+                    <span class="font-extrabold text-2xl tracking-wider text-white flex items-center gap-2">
+                        LUMEN
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest {{ 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' if version == 'v1.0' else 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' }}">
                             {{ version }}
                         </span>
                     </span>
-                    <p class="text-[10px] text-slate-400 font-mono hidden sm:block">Engineering &bull; Systems &bull; Architecture</p>
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest font-mono">Premium Audio &bull; Smart Gear</p>
                 </div>
             </div>
 
-            <!-- Nav Links & Live Edge Status -->
-            <div class="flex items-center space-x-4">
-                <nav class="hidden md:flex items-center space-x-6 text-sm text-slate-300">
-                    <a href="#articles" class="hover:text-white transition">Articles</a>
-                    <a href="#community" class="hover:text-white transition">Community Board</a>
-                    <a href="#stats" class="hover:text-white transition">Platform Stats</a>
-                </nav>
-                <div class="flex items-center gap-2 pl-2 border-l border-slate-800">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono {{ 'bg-indigo-500/10 text-indigo-300 border border-indigo-500/30' if version == 'v1.0' else 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30' }}" title="Active Edge Node Serving this Request">
-                        <span class="w-2 h-2 rounded-full {{ 'bg-indigo-400' if version == 'v1.0' else 'bg-emerald-400' }} animate-pulse"></span>
-                        <span class="truncate max-w-[120px]">{{ hostname }}</span>
-                    </span>
+            <!-- Center Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
+                <a href="#products" class="hover:text-white transition">Products</a>
+                <a href="#cart" class="hover:text-white transition flex items-center gap-1.5">
+                    <span>Cart / Orders</span>
+                    <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-600 text-white" id="nav-cart-badge">{{ notes|length }}</span>
+                </a>
+                <a href="#reviews" class="hover:text-white transition">Reviews</a>
+            </nav>
+
+            <!-- Store Hub Node & Social -->
+            <div class="flex items-center space-x-3">
+                <!-- Fulfillment Node Indicator -->
+                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono" title="Fulfillment Server Node Serving Your Session">
+                    <span class="w-2 h-2 rounded-full {{ 'bg-indigo-400' if version == 'v1.0' else 'bg-emerald-400' }} animate-pulse"></span>
+                    <span class="text-slate-400 text-[11px]">Node:</span>
+                    <span class="text-slate-200 font-bold truncate max-w-[100px]">{{ hostname }}</span>
                 </div>
+
+                <a href="#cart" class="px-4 py-2 rounded-xl text-xs font-bold text-white {{ 'bg-indigo-600 hover:bg-indigo-500' if version == 'v1.0' else 'bg-emerald-600 hover:bg-emerald-500' }} transition flex items-center gap-2 shadow-lg">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="hidden sm:inline">My Bag</span>
+                    <span class="font-mono">({{ notes|length }})</span>
+                </a>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-10 space-y-12 flex-1">
+    <!-- Main Store Content -->
+    <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-16 flex-1">
 
         <!-- Hero Section -->
-        <section class="relative overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-900/90 to-slate-950 p-8 sm:p-12 shadow-2xl">
-            <div class="absolute -top-32 -right-32 w-96 h-96 rounded-full {{ 'bg-indigo-600/15' if version == 'v1.0' else 'bg-emerald-500/15' }} blur-3xl pointer-events-none"></div>
-            
-            <div class="relative z-10 max-w-3xl space-y-4">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold {{ 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' if version == 'v1.0' else 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' }}">
-                    <i class="fa-solid fa-sparkles"></i>
-                    {{ 'Welcome to DevPulse Journal &bull; Local Edition' if version == 'v1.0' else 'DevPulse Journal &bull; Cloud Production Edition' }}
-                </div>
-                <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-                    Where curious engineers read, build, and share.
-                </h1>
-                <p class="text-base sm:text-lg text-slate-400 leading-relaxed">
-                    Explore deep-dives into modern system architecture, high-performance computing, distributed caches, and cloud infrastructure.
-                </p>
-                <div class="pt-2 flex flex-wrap gap-3">
-                    <a href="#community" class="px-5 py-2.5 rounded-xl font-semibold text-sm text-white {{ 'bg-indigo-600 hover:bg-indigo-500' if version == 'v1.0' else 'bg-emerald-600 hover:bg-emerald-500' }} transition shadow-lg flex items-center gap-2">
-                        <i class="fa-solid fa-pen-nib"></i> Leave a Note on the Board
-                    </a>
-                    <button onclick="pingEdge()" id="ping-btn" class="px-5 py-2.5 rounded-xl font-semibold text-sm text-slate-300 bg-slate-900 hover:bg-slate-800 border border-slate-700 transition flex items-center gap-2">
-                        <i class="fa-solid fa-arrows-rotate"></i> Ping Node Mesh
-                    </button>
-                </div>
-            </div>
-        </section>
+        <section class="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 p-8 sm:p-14 shadow-2xl">
+            <div class="absolute -top-40 -right-40 w-[450px] h-[450px] rounded-full {{ 'bg-indigo-600/20' if version == 'v1.0' else 'bg-emerald-500/20' }} blur-3xl pointer-events-none"></div>
 
-        <!-- Stats Bar -->
-        <section id="stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
-            <!-- Stat 1: Total Readers -->
-            <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-5 shadow-lg relative overflow-hidden group hover:border-slate-700 transition">
-                <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
-                    <span>Total Reads / Views</span>
-                    <i class="fa-solid fa-book-open-reader text-indigo-400 text-sm"></i>
-                </div>
-                <div class="text-4xl font-extrabold text-white tracking-tight" id="metric-visits">
-                    {{ visits }}
-                </div>
-                <p class="text-xs text-slate-500 mt-2 flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span> Real-time cached reader count
-                </p>
-            </div>
-
-            <!-- Stat 2: Active Node -->
-            <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-5 shadow-lg relative overflow-hidden group hover:border-slate-700 transition">
-                <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
-                    <span>Active Edge Node</span>
-                    <i class="fa-solid fa-server text-purple-400 text-sm"></i>
-                </div>
-                <div class="text-xl font-mono font-bold text-purple-300 truncate" id="metric-hostname" title="{{ hostname }}">
-                    {{ hostname }}
-                </div>
-                <div class="flex items-center justify-between text-xs text-slate-500 mt-2">
-                    <span>Container Worker</span>
-                    <span class="text-[11px] font-mono text-slate-400">Node Online</span>
-                </div>
-            </div>
-
-            <!-- Stat 3: Community Posts -->
-            <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-5 shadow-lg relative overflow-hidden group hover:border-slate-700 transition">
-                <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
-                    <span>Community Notes</span>
-                    <i class="fa-solid fa-comments text-emerald-400 text-sm"></i>
-                </div>
-                <div class="text-4xl font-extrabold text-emerald-400 tracking-tight" id="metric-notes-count">
-                    {{ notes|length }}
-                </div>
-                <p class="text-xs text-slate-500 mt-2">
-                    Persisted in backend database
-                </p>
-            </div>
-
-            <!-- Stat 4: Service Health -->
-            <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-5 shadow-lg relative overflow-hidden group hover:border-slate-700 transition">
-                <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
-                    <span>Engine &amp; Uptime</span>
-                    <i class="fa-solid fa-heart-pulse text-rose-400 text-sm"></i>
-                </div>
-                <div class="text-2xl font-mono font-bold text-slate-200" id="metric-uptime">
-                    {{ uptime_str }}
-                </div>
-                <p class="text-xs text-slate-500 mt-2 font-mono">
-                    {% if redis_connected %}
-                    <span class="text-emerald-400"><i class="fa-solid fa-check mr-1"></i>Redis Cache Linked</span>
-                    {% else %}
-                    <span class="text-amber-400"><i class="fa-solid fa-circle-notch mr-1"></i>Standalone Mode</span>
-                    {% endif %}
-                </p>
-            </div>
-        </section>
-
-        <!-- Live Node Response Activity (Discreet Load Balancer Demonstration) -->
-        <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-                <div>
-                    <h3 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-network-wired text-indigo-400"></i>
-                        Live Edge Traffic &amp; Node Balancing Trail
-                    </h3>
-                    <p class="text-xs text-slate-400">Audits which worker node served each inbound reader request.</p>
-                </div>
-                <span class="text-xs font-mono px-3 py-1 rounded-full bg-slate-950 border border-slate-800 text-slate-400 self-start sm:self-auto">
-                    Requests Logged: <strong id="trail-count" class="text-white">1</strong>
-                </span>
-            </div>
-            <div id="activity-log" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                <div class="p-3.5 rounded-xl bg-slate-950/80 border border-indigo-500/40 flex items-center justify-between text-xs">
-                    <div class="flex items-center space-x-2.5">
-                        <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
-                        <div>
-                            <span class="font-mono text-indigo-300 font-semibold">{{ hostname }}</span>
-                            <p class="text-[10px] text-slate-500">Initial Page Visit</p>
-                        </div>
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                <div class="space-y-6">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold {{ 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' if version == 'v1.0' else 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' }}">
+                        <i class="fa-solid fa-crown"></i> 2026 FLAGSHIP AUDIO SERIES
+                    </span>
+                    <h1 class="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none">
+                        Sound engineered for pure emotion.
+                    </h1>
+                    <p class="text-slate-400 text-base sm:text-lg leading-relaxed max-w-xl">
+                        Immerse yourself in lossless spatial acoustic clarity. Designed with aircraft-grade titanium, active noise cancellation, and 48-hour battery longevity.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <a href="#products" class="px-6 py-3 rounded-xl font-bold text-sm text-white {{ 'bg-indigo-600 hover:bg-indigo-500' if version == 'v1.0' else 'bg-emerald-600 hover:bg-emerald-500' }} transition shadow-xl flex items-center gap-2">
+                            <i class="fa-solid fa-cart-shopping"></i> Shop Collection
+                        </a>
+                        <button onclick="pingStoreNode()" id="ping-btn" class="px-6 py-3 rounded-xl font-semibold text-sm text-slate-300 bg-slate-900 hover:bg-slate-800 border border-slate-800 transition flex items-center gap-2">
+                            <i class="fa-solid fa-rotate"></i> Check Live Stock
+                        </button>
                     </div>
-                    <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-indigo-500/20 text-indigo-300 font-medium">HTTP 200</span>
+                </div>
+
+                <!-- Hero Product Visual Display -->
+                <div class="relative flex items-center justify-center">
+                    <div class="w-full max-w-md h-80 rounded-2xl bg-gradient-to-tr from-slate-900 to-slate-800 border border-slate-700/80 p-6 flex flex-col justify-between shadow-2xl relative overflow-hidden group">
+                        <div class="flex items-center justify-between text-xs text-slate-400">
+                            <span class="font-bold text-white text-sm">Lumen Pro Horizon ANC</span>
+                            <span class="px-2.5 py-1 rounded-full font-mono font-bold bg-rose-500/20 text-rose-300">$349 USD</span>
+                        </div>
+                        <div class="text-center py-6">
+                            <i class="fa-solid fa-headphones text-8xl {{ 'text-indigo-400' if version == 'v1.0' else 'text-emerald-400' }} group-hover:scale-110 transition duration-300 drop-shadow-[0_10px_25px_rgba(99,102,241,0.3)]"></i>
+                        </div>
+                        <form action="/add" method="POST" class="flex gap-2">
+                            <input type="hidden" name="item" value="Lumen Pro Horizon ANC Headphones ($349)">
+                            <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-white/10 hover:bg-white/20 border border-white/20 transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Quick Add to Bag
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Featured Articles Section -->
-        <section id="articles" class="space-y-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-2xl font-black text-white tracking-tight">Featured Engineering Stories</h2>
-                    <p class="text-xs sm:text-sm text-slate-400">Weekly perspectives on building fast, reliable, resilient systems.</p>
-                </div>
+        <!-- Live Store Real-Time Metrics Strip -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            
+            <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-lg">
+                <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Store Shoppers Today</span>
+                <div class="text-3xl font-black text-white mt-1" id="metric-visits">{{ visits }}</div>
+                <span class="text-[11px] text-slate-500 mt-1 block">Live unique visitor count</span>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Article 1 -->
-                <article class="bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4 group transition">
-                    <div class="space-y-2">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 font-semibold">Distributed Systems</span>
-                            <span class="text-slate-500">5 min read</span>
+            <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-lg">
+                <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Bagged Orders</span>
+                <div class="text-3xl font-black text-rose-400 mt-1" id="metric-cart-count">{{ notes|length }}</div>
+                <span class="text-[11px] text-slate-500 mt-1 block">Saved in live order store</span>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-lg">
+                <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Serving Warehouse Node</span>
+                <div class="text-lg font-mono font-bold text-purple-300 mt-1 truncate" id="metric-hostname">{{ hostname }}</div>
+                <span class="text-[11px] text-slate-500 mt-1 block">Dispatched via Edge Cluster</span>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-lg">
+                <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Inventory Sync</span>
+                <div class="text-lg font-bold text-emerald-400 mt-1 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    {% if redis_connected %}Real-time Sync{% else %}Standalone Mode{% endif %}
+                </div>
+                <span class="text-[11px] text-slate-500 mt-1 block font-mono">Uptime: {{ uptime_str }}</span>
+            </div>
+
+        </section>
+
+        <!-- Product Catalog Section -->
+        <section id="products" class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800/80 pb-4">
+                <div>
+                    <h2 class="text-3xl font-black text-white tracking-tight">Curated Gear</h2>
+                    <p class="text-sm text-slate-400">Select any item below to add it directly to your shopping bag.</p>
+                </div>
+                <span class="text-xs text-slate-400 font-mono">6 Products Available &bull; In Stock</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Product 1 -->
+                <div class="product-card bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between space-y-5 transition">
+                    <div class="space-y-3">
+                        <div class="h-44 rounded-2xl bg-slate-950 flex items-center justify-center relative overflow-hidden">
+                            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Audio</span>
+                            <i class="fa-solid fa-headphones-simple text-6xl text-indigo-400 product-img transition duration-300"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-white group-hover:text-indigo-400 transition leading-snug">
-                            Understanding High-Throughput In-Memory Caching &amp; Sharding
-                        </h3>
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-white">Lumen Studio Wireless</h3>
+                            <span class="text-lg font-black text-white font-mono">$289</span>
+                        </div>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            How modern cloud native microservices eliminate database bottlenecks using tiered Redis caching patterns and asynchronous replication.
+                            Studio-grade dynamic 50mm beryllium drivers with immersive spatial audio tracking.
                         </p>
                     </div>
-                    <div class="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-500">
-                        <span class="font-medium text-slate-400">By Alex Rivers</span>
-                        <span>Nov 2026</span>
-                    </div>
-                </article>
+                    <form action="/add" method="POST">
+                        <input type="hidden" name="item" value="Lumen Studio Wireless ($289)">
+                        <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-slate-800 hover:bg-indigo-600 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-cart-plus"></i> Add to Bag
+                        </button>
+                    </form>
+                </div>
 
-                <!-- Article 2 -->
-                <article class="bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4 group transition">
-                    <div class="space-y-2">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="px-2.5 py-1 rounded-md bg-purple-500/10 text-purple-400 font-semibold">Cloud Infrastructure</span>
-                            <span class="text-slate-500">8 min read</span>
+                <!-- Product 2 -->
+                <div class="product-card bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between space-y-5 transition">
+                    <div class="space-y-3">
+                        <div class="h-44 rounded-2xl bg-slate-950 flex items-center justify-center relative overflow-hidden">
+                            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Wearable</span>
+                            <i class="fa-solid fa-stopwatch-20 text-6xl text-emerald-400 product-img transition duration-300"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-white group-hover:text-purple-400 transition leading-snug">
-                            Zero-Downtime Rolling Deploys Across Container Clusters
-                        </h3>
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-white">Aura Chrono Smartwatch</h3>
+                            <span class="text-lg font-black text-white font-mono">$329</span>
+                        </div>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            A deep dive into declarative replicas, healthcheck probes, and self-healing orchestrators for rock-solid 99.99% availability.
+                            Titanium chassis, sapphire crystal display, ECG monitoring, and 14-day battery life.
                         </p>
                     </div>
-                    <div class="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-500">
-                        <span class="font-medium text-slate-400">By Elena Chen</span>
-                        <span>Nov 2026</span>
-                    </div>
-                </article>
+                    <form action="/add" method="POST">
+                        <input type="hidden" name="item" value="Aura Chrono Smartwatch ($329)">
+                        <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-slate-800 hover:bg-emerald-600 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-cart-plus"></i> Add to Bag
+                        </button>
+                    </form>
+                </div>
 
-                <!-- Article 3 -->
-                <article class="bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4 group transition">
-                    <div class="space-y-2">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 font-semibold">DevOps &amp; Security</span>
-                            <span class="text-slate-500">6 min read</span>
+                <!-- Product 3 -->
+                <div class="product-card bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between space-y-5 transition">
+                    <div class="space-y-3">
+                        <div class="h-44 rounded-2xl bg-slate-950 flex items-center justify-center relative overflow-hidden">
+                            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-purple-500/20 text-purple-300 border border-purple-500/30">Audio</span>
+                            <i class="fa-solid fa-podcast text-6xl text-purple-400 product-img transition duration-300"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-white group-hover:text-emerald-400 transition leading-snug">
-                            Hardening Security Groups and Ingress Rules in Public Clouds
-                        </h3>
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-white">Aero Pods Pro True Wireless</h3>
+                            <span class="text-lg font-black text-white font-mono">$179</span>
+                        </div>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            Best practices for locking down administrative SSH ports, managing least-privilege policies, and routing clean HTTP edge traffic.
+                            Ultra-compact in-ear monitors with custom silicone seals and IPX7 water resistance.
                         </p>
                     </div>
-                    <div class="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-500">
-                        <span class="font-medium text-slate-400">By Marcus Vance</span>
-                        <span>Nov 2026</span>
+                    <form action="/add" method="POST">
+                        <input type="hidden" name="item" value="Aero Pods Pro True Wireless ($179)">
+                        <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-slate-800 hover:bg-purple-600 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-cart-plus"></i> Add to Bag
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="product-card bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between space-y-5 transition">
+                    <div class="space-y-3">
+                        <div class="h-44 rounded-2xl bg-slate-950 flex items-center justify-center relative overflow-hidden">
+                            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30">Desk Setup</span>
+                            <i class="fa-solid fa-keyboard text-6xl text-amber-400 product-img transition duration-300"></i>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-white">Titan Apex Mechanical Board</h3>
+                            <span class="text-lg font-black text-white font-mono">$199</span>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Hot-swappable lubricated switches, CNC aluminum body, and RGB per-key sound-dampened casing.
+                        </p>
                     </div>
-                </article>
+                    <form action="/add" method="POST">
+                        <input type="hidden" name="item" value="Titan Apex Mechanical Board ($199)">
+                        <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-slate-800 hover:bg-amber-600 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-cart-plus"></i> Add to Bag
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Product 5 -->
+                <div class="product-card bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between space-y-5 transition">
+                    <div class="space-y-3">
+                        <div class="h-44 rounded-2xl bg-slate-950 flex items-center justify-center relative overflow-hidden">
+                            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">Power</span>
+                            <i class="fa-solid fa-bolt text-6xl text-cyan-400 product-img transition duration-300"></i>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-white">Omni Pad Fast Charger</h3>
+                            <span class="text-lg font-black text-white font-mono">$79</span>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Triple-coil 45W Qi wireless charging station with Italian leather surface.
+                        </p>
+                    </div>
+                    <form action="/add" method="POST">
+                        <input type="hidden" name="item" value="Omni Pad Fast Charger ($79)">
+                        <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-slate-800 hover:bg-cyan-600 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-cart-plus"></i> Add to Bag
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Product 6 -->
+                <div class="product-card bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between space-y-5 transition">
+                    <div class="space-y-3">
+                        <div class="h-44 rounded-2xl bg-slate-950 flex items-center justify-center relative overflow-hidden">
+                            <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-rose-500/20 text-rose-300 border border-rose-500/30">Audio</span>
+                            <i class="fa-solid fa-volume-high text-6xl text-rose-400 product-img transition duration-300"></i>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-white">Apex Hi-Fi Studio Monitor</h3>
+                            <span class="text-lg font-black text-white font-mono">$450</span>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Bi-amplified reference studio speaker with acoustic waveguide and crystal treble fidelity.
+                        </p>
+                    </div>
+                    <form action="/add" method="POST">
+                        <input type="hidden" name="item" value="Apex Hi-Fi Studio Monitor ($450)">
+                        <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-slate-800 hover:bg-rose-600 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-cart-plus"></i> Add to Bag
+                        </button>
+                    </form>
+                </div>
+
             </div>
         </section>
 
-        <!-- Community Discussion Board (Data Persistence Feature) -->
-        <section id="community" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Shopping Bag / Orders Section (Data Persistence Feature) -->
+        <section id="cart" class="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-4">
             
-            <!-- Left Column: Add Entry Form -->
-            <div class="lg:col-span-1 bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+            <!-- Left: Custom Order Input -->
+            <div class="lg:col-span-1 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
                 <div>
-                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-pen text-indigo-400"></i>
-                        Post a Community Thought
+                    <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-cart-shopping text-rose-500"></i>
+                        Custom Order or Pre-order
                     </h3>
                     <p class="text-xs text-slate-400 mt-1">
-                        Share a book recommendation, tech insight, or note. Entries persist in the persistent store.
+                        Looking for a custom edition or gift order? Type your item below to save it into your order bag.
                     </p>
                 </div>
 
                 <form action="/add" method="POST" class="space-y-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Your Note or Thought</label>
-                        <input type="text" name="item" required placeholder="e.g. Really loved the article on distributed caches!" 
-                               class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Item Name &amp; Spec</label>
+                        <input type="text" name="item" required placeholder="e.g. Custom Engraved Titanium Earbuds..." 
+                               class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent">
                     </div>
                     <button type="submit" 
-                            class="w-full py-2.5 rounded-xl font-semibold text-sm text-white {{ 'bg-indigo-600 hover:bg-indigo-500' if version == 'v1.0' else 'bg-emerald-600 hover:bg-emerald-500' }} active:scale-95 transition shadow-lg flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-paper-plane"></i> Publish Note
+                            class="w-full py-3 rounded-xl font-bold text-sm text-white bg-rose-600 hover:bg-rose-500 active:scale-95 transition shadow-lg flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Add Custom Item to Bag
                     </button>
                 </form>
 
                 <div class="pt-3 border-t border-slate-800">
-                    <form action="/clear" method="POST" onsubmit="return confirm('Clear community notes?');">
+                    <form action="/clear" method="POST" onsubmit="return confirm('Empty all items from your shopping bag?');">
                         <button type="submit" class="w-full py-2 rounded-xl text-xs text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/30 transition flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-trash-can text-xs"></i> Clear Notes
+                            <i class="fa-solid fa-trash-can text-xs"></i> Empty Shopping Bag
                         </button>
                     </form>
                 </div>
             </div>
 
-            <!-- Right Column: Notes Feed -->
-            <div class="lg:col-span-2 bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <!-- Right: Current Bag / Placed Orders -->
+            <div class="lg:col-span-2 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-4">
                     <div>
-                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-comments text-indigo-400"></i>
-                            Community Feed (<span id="feed-count">{{ notes|length }}</span>)
+                        <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-bag-shopping {{ 'text-indigo-400' if version == 'v1.0' else 'text-emerald-400' }}"></i>
+                            Your Shopping Bag (<span id="bag-count">{{ notes|length }}</span>)
                         </h3>
-                        <p class="text-xs text-slate-400">Live thoughts recorded by readers around the world.</p>
+                        <p class="text-xs text-slate-400">All items are saved securely in your persisted session.</p>
                     </div>
-                    <span class="text-xs font-mono px-3 py-1 rounded-lg bg-slate-950 border border-slate-800 text-slate-400">
-                        Live Feed
+                    <span class="text-xs font-mono px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 font-semibold">
+                        Cart Sync: <strong class="text-emerald-400">Active</strong>
                     </span>
                 </div>
 
                 {% if notes %}
-                <ul class="divide-y divide-slate-800/80 bg-slate-950/60 rounded-xl border border-slate-800/80 overflow-hidden max-h-80 overflow-y-auto">
+                <ul class="divide-y divide-slate-800 bg-slate-950/70 rounded-2xl border border-slate-800 overflow-hidden max-h-96 overflow-y-auto">
                     {% for note in notes %}
-                    <li class="px-5 py-3.5 text-sm flex items-center justify-between hover:bg-slate-900/50 transition">
+                    <li class="px-5 py-4 text-sm flex items-center justify-between hover:bg-slate-900/50 transition">
                         <div class="flex items-center space-x-3">
-                            <span class="w-2 h-2 rounded-full {{ 'bg-indigo-400' if version == 'v1.0' else 'bg-emerald-400' }}"></span>
-                            <span class="text-slate-200 font-medium">{{ note }}</span>
+                            <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-xs text-rose-400 font-bold">
+                                <i class="fa-solid fa-box"></i>
+                            </div>
+                            <div>
+                                <span class="text-slate-100 font-bold block">{{ note }}</span>
+                                <span class="text-[11px] text-slate-500">In Stock &bull; Ready for Dispatch</span>
+                            </div>
                         </div>
-                        <span class="text-xs text-slate-500 font-mono"><i class="fa-regular fa-clock mr-1"></i>Saved</span>
+                        <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                            Saved in Bag
+                        </span>
                     </li>
                     {% endfor %}
                 </ul>
+                <div class="pt-2 flex items-center justify-between">
+                    <span class="text-xs text-slate-400">Total Items: <strong class="text-white">{{ notes|length }}</strong></span>
+                    <button onclick="alert('Checkout demo completed! All items confirmed.');" class="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition shadow-lg">
+                        Proceed to Checkout &rarr;
+                    </button>
+                </div>
                 {% else %}
-                <div class="py-12 text-center text-slate-500 space-y-2">
-                    <i class="fa-regular fa-message text-3xl text-slate-600"></i>
-                    <p class="text-sm">No notes have been posted yet.</p>
-                    <p class="text-xs text-slate-600">Be the first to leave a thought in the form on the left!</p>
+                <div class="py-16 text-center text-slate-500 space-y-3">
+                    <div class="w-16 h-16 rounded-full bg-slate-950 flex items-center justify-center mx-auto text-2xl text-slate-600">
+                        <i class="fa-solid fa-cart-arrow-down"></i>
+                    </div>
+                    <p class="text-base font-semibold text-slate-300">Your shopping bag is empty.</p>
+                    <p class="text-xs text-slate-500">Click "Add to Bag" on any of the products above to test cart persistence.</p>
                 </div>
                 {% endif %}
             </div>
+
         </section>
 
     </main>
 
     <!-- Footer -->
-    <footer class="w-full border-t border-slate-800/80 bg-slate-950/90 py-8 text-center text-xs text-slate-500 space-y-3">
+    <footer class="w-full border-t border-slate-800/80 bg-slate-950/90 py-10 text-center text-xs text-slate-500 space-y-3">
         <div class="flex items-center justify-center space-x-6 text-sm">
             <a href="https://github.com/lihengsomkh/adv_clouds_homework1" target="_blank" class="hover:text-slate-300 transition flex items-center gap-1.5">
-                <i class="fa-brands fa-github"></i> GitHub
+                <i class="fa-brands fa-github"></i> GitHub Source
             </a>
             <a href="https://hub.docker.com/r/lihengkh/homework/tags" target="_blank" class="hover:text-slate-300 transition flex items-center gap-1.5">
-                <i class="fa-brands fa-docker text-blue-400"></i> Docker Hub
+                <i class="fa-brands fa-docker text-blue-400"></i> Docker Hub Registry
             </a>
         </div>
-        <p>&copy; 2026 DevPulse Journal &bull; Crafted with Python Flask &amp; Redis</p>
+        <p>&copy; 2026 LUMEN Technologies Inc. &bull; All Rights Reserved</p>
         <p class="text-[11px] font-mono text-slate-600">
-            Node ID: <span class="text-slate-400">{{ hostname }}</span> &bull; Release: <span class="text-slate-400">{{ version }}</span>
+            Node Server: <span class="text-slate-400">{{ hostname }}</span> &bull; Edition: <span class="text-slate-400">{{ version }}</span>
         </p>
     </footer>
 
-    <!-- Interactive Mesh Ping Script -->
+    <!-- Interactive Node Ping Script -->
     <script>
-        let pingCount = 1;
-        const colorPalette = [
-            'border-indigo-500/40 text-indigo-300 bg-indigo-500/20',
-            'border-emerald-500/40 text-emerald-300 bg-emerald-500/20',
-            'border-purple-500/40 text-purple-300 bg-purple-500/20',
-            'border-amber-500/40 text-amber-300 bg-amber-500/20',
-            'border-cyan-500/40 text-cyan-300 bg-cyan-500/20',
-        ];
-        const hostColorRegistry = {};
-
-        function getColor(host) {
-            if (!hostColorRegistry[host]) {
-                const idx = Object.keys(hostColorRegistry).length % colorPalette.length;
-                hostColorRegistry[host] = colorPalette[idx];
-            }
-            return hostColorRegistry[host];
-        }
-
-        async function pingEdge() {
+        async function pingStoreNode() {
             const btn = document.getElementById('ping-btn');
             btn.disabled = true;
-            btn.classList.add('opacity-75');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> Checking Stock...';
 
             try {
                 const res = await fetch('/api/info');
                 const data = await res.json();
-                
-                pingCount++;
-                document.getElementById('trail-count').innerText = pingCount;
                 document.getElementById('metric-visits').innerText = data.visits;
                 document.getElementById('metric-hostname').innerText = data.hostname;
-
-                const colorClass = getColor(data.hostname);
-                const log = document.getElementById('activity-log');
-                
-                const card = document.createElement('div');
-                card.className = `p-3.5 rounded-xl bg-slate-950/80 border ${colorClass.split(' ')[0]} flex items-center justify-between text-xs`;
-                card.innerHTML = `
-                    <div class="flex items-center space-x-2.5">
-                        <span class="w-2 h-2 rounded-full ${colorClass.split(' ')[1].replace('text-', 'bg-')}"></span>
-                        <div>
-                            <span class="font-mono ${colorClass.split(' ')[1]} font-semibold">${data.hostname}</span>
-                            <p class="text-[10px] text-slate-500">Request #${pingCount} &bull; ${new Date().toLocaleTimeString()}</p>
-                        </div>
-                    </div>
-                    <span class="px-2 py-0.5 rounded text-[10px] font-mono ${colorClass.split(' ')[2]} ${colorClass.split(' ')[1]} font-medium">HTTP 200</span>
-                `;
-
-                log.insertBefore(card, log.firstChild);
-                if (log.children.length > 9) {
-                    log.removeChild(log.lastChild);
-                }
+                alert(`Stock sync verified! Active Node: ${data.hostname} | Visits: ${data.visits}`);
             } catch (err) {
                 console.error("Ping error:", err);
             } finally {
                 btn.disabled = false;
-                btn.classList.remove('opacity-75');
+                btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Check Live Stock';
             }
         }
     </script>
