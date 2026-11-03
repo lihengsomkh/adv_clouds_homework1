@@ -1,14 +1,19 @@
 import os
+import time
 import socket
+import platform
 from datetime import datetime
 from flask import Flask, render_template_string, request, redirect, url_for, jsonify
 import redis
 
 app = Flask(__name__)
 
-# Configuration
+# Start time for uptime calculation
+START_TIME = time.time()
+
+# Configuration from Environment
 APP_VERSION = os.getenv("APP_VERSION", "v1.0")
-APP_TITLE = os.getenv("APP_TITLE", "Cloud Counter - Docker & Swarm Demo")
+APP_TITLE = os.getenv("APP_TITLE", "Cloud Counter - DevOps & Cloud Computing Demo")
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 REDIS_DB = int(os.getenv("REDIS_DB", 0))
@@ -19,8 +24,8 @@ def get_redis_client():
             host=REDIS_HOST,
             port=REDIS_PORT,
             db=REDIS_DB,
-            socket_connect_timeout=1.5,
-            socket_timeout=1.5,
+            socket_connect_timeout=1.2,
+            socket_timeout=1.2,
             decode_responses=True
         )
         r.ping()
@@ -28,230 +33,418 @@ def get_redis_client():
     except Exception:
         return None
 
+# Fallback store if Redis is absent (e.g. standalone AWS EC2 demo container)
+FALLBACK_VISITS = 0
+FALLBACK_NOTES = ["Welcome to Cloud Counter Demo! (Standalone Mode)"]
+
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
+    <title>{{ title }} [{{ version }}]</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '{{ "#eff6ff" if version == "v1.0" else "#f0fdf4" }}',
+                            500: '{{ "#3b82f6" if version == "v1.0" else "#10b981" }}',
+                            600: '{{ "#2563eb" if version == "v1.0" else "#059669" }}',
+                            700: '{{ "#1d4ed8" if version == "v1.0" else "#047857" }}',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.02); }
+        }
+        .live-pulse {
+            animation: pulse-subtle 3s infinite ease-in-out;
+        }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-start p-6">
-    <div class="max-w-3xl w-full space-y-6">
-        
-        <!-- Header Card -->
-        <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-4">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ 'bg-blue-600 text-white' if version == 'v1.0' else 'bg-emerald-600 text-white' }}">
-                    <i class="fa-solid fa-code-commit mr-1.5"></i> Release {{ version }}
-                </span>
-            </div>
-            <div class="flex items-center space-x-4">
-                <div class="p-3 bg-blue-500/20 text-blue-400 rounded-lg">
-                    <i class="fa-solid fa-cubes text-3xl"></i>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-start antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="w-full border-b border-slate-800/80 bg-slate-900/60 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg {{ 'bg-gradient-to-tr from-blue-600 to-indigo-500' if version == 'v1.0' else 'bg-gradient-to-tr from-emerald-600 to-teal-400' }}">
+                    <i class="fa-solid fa-cloud text-white text-lg"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-white tracking-tight">{{ title }}</h1>
-                    <p class="text-sm text-slate-400">Docker &bull; Swarm Mesh &bull; Docker Hub &bull; AWS EC2</p>
+                    <span class="font-bold text-white tracking-tight flex items-center gap-2">
+                        Cloud Counter
+                        <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold uppercase tracking-wider {{ 'bg-blue-500/20 text-blue-400 border border-blue-500/30' if version == 'v1.0' else 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' }}">
+                            {{ version }}
+                        </span>
+                    </span>
+                    <p class="text-[11px] text-slate-400 font-mono">Maintainer: lihengkh</p>
+                </div>
+            </div>
+
+            <!-- Quick Link Badges -->
+            <div class="flex items-center space-x-2">
+                <a href="https://github.com/lihengsomkh/adv_clouds_homework1" target="_blank" 
+                   class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-300 hover:text-white flex items-center gap-1.5 transition">
+                    <i class="fa-brands fa-github text-sm"></i>
+                    <span class="hidden sm:inline">GitHub</span>
+                </a>
+                <a href="https://hub.docker.com/r/lihengkh/homework/tags" target="_blank" 
+                   class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-300 hover:text-white flex items-center gap-1.5 transition">
+                    <i class="fa-brands fa-docker text-blue-400 text-sm"></i>
+                    <span class="hidden sm:inline">Docker Hub</span>
+                </a>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    Live
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl w-full px-4 sm:px-6 py-8 space-y-8 flex-1">
+        
+        <!-- Hero Banner -->
+        <div class="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-900/90 to-slate-950 p-6 sm:p-8 shadow-2xl">
+            <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full {{ 'bg-blue-600/15' if version == 'v1.0' else 'bg-emerald-500/15' }} blur-3xl pointer-events-none"></div>
+            
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="space-y-2">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold {{ 'bg-blue-500/20 text-blue-300 border border-blue-500/30' if version == 'v1.0' else 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' }}">
+                        <i class="fa-solid {{ 'fa-microchip' if version == 'v1.0' else 'fa-server' }}"></i>
+                        {{ 'Release v1.0 &bull; Local Docker Compose & Swarm Stack' if version == 'v1.0' else 'Release v2.0 &bull; Live AWS EC2 Cloud Deployment' }}
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                        {{ title }}
+                    </h1>
+                    <p class="text-sm sm:text-base text-slate-400 max-w-2xl">
+                        A distributed multi-container cloud application demonstrating Docker Compose bridge networking, Docker Swarm routing mesh load balancing, named volume data persistence, and AWS EC2 container deployment.
+                    </p>
+                </div>
+
+                <!-- Environment Pill Card -->
+                <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 flex flex-col gap-1 min-w-[220px]">
+                    <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Deployment Runtime</span>
+                    <span class="text-base font-bold text-white flex items-center gap-2">
+                        {% if version == 'v2.0' %}
+                        <i class="fa-brands fa-aws text-amber-400 text-lg"></i> AWS EC2 (Public Cloud)
+                        {% else %}
+                        <i class="fa-solid fa-cubes text-blue-400"></i> Docker Cluster / Mesh
+                        {% endif %}
+                    </span>
+                    <span class="text-xs text-slate-500 font-mono mt-1">Image: lihengkh/homework:{{ version }}</span>
                 </div>
             </div>
         </div>
 
-        <!-- System Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Hit Counter -->
-            <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow">
+        <!-- 4 Key Telemetry Metrics Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <!-- Metric 1: Total Visits (Redis Persisted) -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5 shadow-lg relative overflow-hidden group hover:border-slate-700 transition">
                 <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
                     <span>Total Visits</span>
-                    <i class="fa-solid fa-chart-line text-blue-400"></i>
+                    <i class="fa-solid fa-chart-simple text-blue-400 text-sm"></i>
                 </div>
-                <div class="text-3xl font-extrabold text-blue-400">
+                <div class="text-4xl font-black text-white tracking-tight" id="metric-visits">
                     {{ visits }}
                 </div>
-                <p class="text-xs text-slate-500 mt-1">Incremented on each page load</p>
+                <p class="text-xs text-slate-500 mt-2 flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Incremented via Redis <code class="text-blue-300 font-mono text-[11px]">INCR</code>
+                </p>
             </div>
 
-            <!-- Container Hostname -->
-            <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow">
+            <!-- Metric 2: Responding Container ID -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5 shadow-lg relative overflow-hidden group hover:border-slate-700 transition">
                 <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
-                    <span>Container ID</span>
-                    <i class="fa-solid fa-server text-purple-400"></i>
+                    <span>Responding Container</span>
+                    <i class="fa-solid fa-server text-purple-400 text-sm"></i>
                 </div>
-                <div class="text-xl font-mono font-bold text-purple-300 truncate" title="{{ hostname }}">
+                <div class="text-2xl font-mono font-bold text-purple-300 truncate" id="metric-hostname" title="{{ hostname }}">
                     {{ hostname }}
                 </div>
-                <p class="text-xs text-slate-500 mt-1">Changes across Swarm replicas</p>
+                <div class="flex items-center justify-between text-xs text-slate-500 mt-2">
+                    <span>Task Hostname</span>
+                    <button onclick="navigator.clipboard.writeText('{{ hostname }}'); alert('Container ID copied: {{ hostname }}');" 
+                            class="text-slate-400 hover:text-white text-[11px] underline">Copy ID</button>
+                </div>
             </div>
 
-            <!-- Redis Status -->
-            <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow">
+            <!-- Metric 3: Database & Cache Status -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5 shadow-lg relative overflow-hidden group hover:border-slate-700 transition">
                 <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
-                    <span>Database Status</span>
-                    <i class="fa-solid fa-database text-emerald-400"></i>
+                    <span>Backing Database</span>
+                    <i class="fa-solid fa-database text-emerald-400 text-sm"></i>
                 </div>
                 <div>
                     {% if redis_connected %}
-                    <span class="inline-flex items-center text-sm font-semibold text-emerald-400">
-                        <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full mr-2 animate-pulse"></span>
-                        Connected (Redis)
-                    </span>
-                    <p class="text-xs text-slate-500 mt-1">{{ redis_host }}:{{ redis_port }}</p>
+                    <div class="text-xl font-bold text-emerald-400 flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Redis 7 Alpine
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2 font-mono truncate">{{ redis_host }}:{{ redis_port }}</p>
                     {% else %}
-                    <span class="inline-flex items-center text-sm font-semibold text-amber-400">
-                        <span class="w-2.5 h-2.5 bg-amber-500 rounded-full mr-2"></span>
+                    <div class="text-xl font-bold text-amber-400 flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-amber-500"></span>
                         Standalone Mode
-                    </span>
-                    <p class="text-xs text-slate-500 mt-1">No backing DB attached</p>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">In-Memory (EC2 Single Container)</p>
                     {% endif %}
+                </div>
+            </div>
+
+            <!-- Metric 4: Cluster Uptime -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5 shadow-lg relative overflow-hidden group hover:border-slate-700 transition">
+                <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+                    <span>Container Uptime</span>
+                    <i class="fa-solid fa-stopwatch text-cyan-400 text-sm"></i>
+                </div>
+                <div class="text-2xl font-mono font-bold text-cyan-300" id="metric-uptime">
+                    {{ uptime_str }}
+                </div>
+                <p class="text-xs text-slate-500 mt-2 font-mono">
+                    Python {{ py_version }} &bull; Linux
+                </p>
+            </div>
+        </div>
+
+        <!-- Interactive Swarm Load-Balancing & Routing Mesh Showcase -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-7 shadow-xl space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+                <div>
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-network-wired text-indigo-400"></i>
+                        Docker Swarm Load Balancing &amp; Routing Mesh Visualizer
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-400 mt-1">
+                        When scaled to 3 replicas in Docker Swarm (<code class="text-indigo-300 font-mono">docker service scale app-stack_web=3</code>), requests are automatically round-robined across active tasks.
+                    </p>
+                </div>
+                <button onclick="pingCluster()" id="ping-btn" 
+                        class="px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm text-white bg-indigo-600 hover:bg-indigo-500 active:scale-95 transition shadow-lg flex items-center justify-center gap-2 self-start sm:self-auto">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Ping Cluster Mesh</span>
+                </button>
+            </div>
+
+            <!-- Live Cluster Activity Log -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-400">
+                    <span>Recent Request Trail (<span id="trail-count">1</span>)</span>
+                    <span class="text-slate-500 text-[11px] font-normal">Auto-records each incoming task response</span>
+                </div>
+                <div id="activity-log" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    <!-- Initial request card -->
+                    <div class="p-3.5 rounded-xl bg-slate-950/80 border border-indigo-500/40 flex items-center justify-between text-xs">
+                        <div class="flex items-center space-x-2.5">
+                            <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                            <div>
+                                <span class="font-mono text-indigo-300 font-semibold">{{ hostname }}</span>
+                                <p class="text-[10px] text-slate-500">Initial Page Load</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-indigo-500/20 text-indigo-300 font-medium">HTTP 200</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Persistence Test Section -->
-        <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-4">
-            <div class="flex items-center justify-between">
+        <!-- Data Persistence Showcase Section (Part 1 Test) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left: Add Data Form -->
+            <div class="lg:col-span-1 bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
                 <div>
-                    <h2 class="text-lg font-semibold text-white flex items-center">
-                        <i class="fa-solid fa-hard-drive mr-2 text-blue-400"></i> Data Persistence Test
-                    </h2>
-                    <p class="text-xs text-slate-400">Submit data below to verify persistence across container restarts and Docker named volumes.</p>
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-hard-drive text-blue-400"></i>
+                        Data Persistence Test
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">
+                        Entries are committed to Redis and saved into the Docker named volume <code class="text-blue-300 font-mono text-[11px]">redis_data</code>.
+                    </p>
                 </div>
-                <span class="text-xs text-slate-400 bg-slate-700/50 px-2.5 py-1 rounded-md border border-slate-600">
-                    Volume: <code class="text-blue-300 font-mono">redis_data</code>
-                </span>
+
+                <form action="/add" method="POST" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1.5">Note Content</label>
+                        <input type="text" name="item" required placeholder="e.g. Cloud Homework Demo Entry..." 
+                               class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <button type="submit" 
+                            class="w-full py-2.5 rounded-xl font-semibold text-sm text-white bg-blue-600 hover:bg-blue-500 active:scale-95 transition shadow-lg flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Save to Volume
+                    </button>
+                </form>
+
+                <div class="pt-3 border-t border-slate-800">
+                    <form action="/clear" method="POST" onsubmit="return confirm('Clear all saved test notes?');">
+                        <button type="submit" class="w-full py-2 rounded-xl text-xs text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/30 transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-trash-can text-xs"></i> Reset Test Data
+                        </button>
+                    </form>
+                </div>
             </div>
 
-            <form action="/add" method="POST" class="flex gap-2">
-                <input type="text" name="item" required placeholder="Enter test text (e.g. Homework Test Data #1)..." 
-                       class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-5 py-2 rounded-lg text-sm transition flex items-center shadow">
-                    <i class="fa-solid fa-plus mr-1.5"></i> Save
-                </button>
-            </form>
+            <!-- Right: Stored Data Explorer -->
+            <div class="lg:col-span-2 bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-database text-emerald-400"></i>
+                            Persisted Entries (<span id="notes-count">{{ notes|length }}</span>)
+                        </h3>
+                        <p class="text-xs text-slate-400">Data persists across <code class="text-slate-300 font-mono">docker compose down</code> and restarts.</p>
+                    </div>
+                    <span class="text-xs font-mono px-3 py-1 rounded-lg bg-slate-950 border border-slate-800 text-slate-400">
+                        Volume: <strong class="text-blue-400">redis_data</strong>
+                    </span>
+                </div>
 
-            <div class="border-t border-slate-700/70 pt-4">
-                <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">Persisted Items ({{ notes|length }})</h3>
                 {% if notes %}
-                <ul class="divide-y divide-slate-700/50 bg-slate-900/50 rounded-lg border border-slate-700/70 overflow-hidden">
+                <ul class="divide-y divide-slate-800/80 bg-slate-950/60 rounded-xl border border-slate-800/80 overflow-hidden max-h-80 overflow-y-auto">
                     {% for note in notes %}
-                    <li class="px-4 py-2.5 text-sm flex items-center justify-between hover:bg-slate-800/50 transition">
-                        <span class="text-slate-200 font-medium">{{ note }}</span>
-                        <span class="text-xs text-slate-500"><i class="fa-regular fa-clock mr-1"></i>Stored in Redis</span>
+                    <li class="px-4 py-3 text-sm flex items-center justify-between hover:bg-slate-900/50 transition">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            <span class="text-slate-200 font-medium">{{ note }}</span>
+                        </div>
+                        <span class="text-xs text-slate-500 font-mono"><i class="fa-regular fa-clock mr-1"></i>Saved in Redis</span>
                     </li>
                     {% endfor %}
                 </ul>
                 {% else %}
-                <p class="text-xs text-slate-500 italic py-2">No custom items stored yet. Type something above and click "Save" to test persistence!</p>
+                <div class="py-12 text-center text-slate-500 space-y-2">
+                    <i class="fa-solid fa-box-open text-3xl text-slate-600"></i>
+                    <p class="text-sm">No custom notes recorded yet.</p>
+                    <p class="text-xs text-slate-600">Enter a note in the form on the left to verify named volume persistence.</p>
+                </div>
                 {% endif %}
             </div>
         </div>
 
-        <!-- Footer -->
-        <div class="text-center text-xs text-slate-500 space-y-1">
-            <p>Docker &bull; Docker Compose &bull; Docker Swarm &bull; AWS EC2 Deployment</p>
-            <p>Maintainer: <span class="text-slate-400 font-semibold">lihengkh</span></p>
+        <!-- Project Rubric & Architecture Checklist Card -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-clipboard-check text-emerald-400"></i>
+                Assignment Verification Milestones
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <p class="font-semibold text-slate-200">Part 1: Docker Compose</p>
+                        <p class="text-[11px] text-slate-400">Bridge Net + Named Vol</p>
+                    </div>
+                    <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</span>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <p class="font-semibold text-slate-200">Part 2: Docker Swarm</p>
+                        <p class="text-[11px] text-slate-400">3 Replicas + Self-Healing</p>
+                    </div>
+                    <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</span>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <p class="font-semibold text-slate-200">Part 3: Docker Hub</p>
+                        <p class="text-[11px] text-slate-400">Tags v1 and v2 Public</p>
+                    </div>
+                    <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</span>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <p class="font-semibold text-slate-200">Part 4: AWS EC2</p>
+                        <p class="text-[11px] text-slate-400">Free Tier Port 80 Live</p>
+                    </div>
+                    <span class="w-6 h-6 rounded-full {{ 'bg-emerald-500/20 text-emerald-400' if version == 'v2.0' else 'bg-slate-800 text-slate-500' }} flex items-center justify-center font-bold">
+                        {{ '✓' if version == 'v2.0' else '...' }}
+                    </span>
+                </div>
+            </div>
         </div>
 
-    </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full border-t border-slate-800/80 bg-slate-950/80 py-6 mt-12 text-center text-xs text-slate-500 space-y-2">
+        <p>Advanced Cloud Computing &bull; Docker, Swarm, Docker Hub, &amp; AWS EC2 Deployment</p>
+        <p>Built for Student: <strong class="text-slate-400 font-mono">lihengkh</strong> &bull; Docker Image: <span class="text-slate-400 font-mono">lihengkh/homework:{{ version }}</span></p>
+    </footer>
+
+    <!-- Interactive Client Script -->
+    <script>
+        let reqCount = 1;
+        const knownColors = [
+            'border-blue-500/40 text-blue-300 bg-blue-500/20',
+            'border-emerald-500/40 text-emerald-300 bg-emerald-500/20',
+            'border-purple-500/40 text-purple-300 bg-purple-500/20',
+            'border-amber-500/40 text-amber-300 bg-amber-500/20',
+            'border-cyan-500/40 text-cyan-300 bg-cyan-500/20',
+        ];
+        const containerColorMap = {};
+
+        function getColorForContainer(id) {
+            if (!containerColorMap[id]) {
+                const colorIndex = Object.keys(containerColorMap).length % knownColors.length;
+                containerColorMap[id] = knownColors[colorIndex];
+            }
+            return containerColorMap[id];
+        }
+
+        async function pingCluster() {
+            const btn = document.getElementById('ping-btn');
+            btn.disabled = true;
+            btn.classList.add('opacity-75');
+
+            try {
+                const res = await fetch('/api/info');
+                const data = await res.json();
+                
+                reqCount++;
+                document.getElementById('trail-count').innerText = reqCount;
+                document.getElementById('metric-visits').innerText = data.visits;
+                document.getElementById('metric-hostname').innerText = data.hostname;
+
+                const colorClass = getColorForContainer(data.hostname);
+                const log = document.getElementById('activity-log');
+                
+                const card = document.createElement('div');
+                card.className = `p-3.5 rounded-xl bg-slate-950/80 border ${colorClass.split(' ')[0]} flex items-center justify-between text-xs animate-fadeIn`;
+                card.innerHTML = `
+                    <div class="flex items-center space-x-2.5">
+                        <span class="w-2 h-2 rounded-full ${colorClass.split(' ')[1].replace('text-', 'bg-')}"></span>
+                        <div>
+                            <span class="font-mono ${colorClass.split(' ')[1]} font-semibold">${data.hostname}</span>
+                            <p class="text-[10px] text-slate-500">Request #${reqCount} &bull; ${new Date().toLocaleTimeString()}</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-mono ${colorClass.split(' ')[2]} ${colorClass.split(' ')[1]} font-medium">HTTP 200</span>
+                `;
+
+                log.insertBefore(card, log.firstChild);
+                // Keep max 9 items
+                if (log.children.length > 9) {
+                    log.removeChild(log.lastChild);
+                }
+            } catch (err) {
+                console.error("Failed to ping cluster:", err);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-75');
+            }
+        }
+    </script>
 </body>
 </html>
-"""
-
-# In-memory fallback if Redis is not connected (e.g., standalone EC2 demo)
-FALLBACK_VISITS = 0
-FALLBACK_NOTES = ["Standalone mode default note"]
-
-@app.route("/", methods=["GET"])
-def index():
-    global FALLBACK_VISITS
-    hostname = socket.gethostname()
-    r = get_redis_client()
-    
-    if r:
-        try:
-            visits = r.incr("page_views")
-            notes = r.lrange("user_notes", 0, -1)
-            redis_connected = True
-        except Exception:
-            FALLBACK_VISITS += 1
-            visits = FALLBACK_VISITS
-            notes = FALLBACK_NOTES
-            redis_connected = False
-    else:
-        FALLBACK_VISITS += 1
-        visits = FALLBACK_VISITS
-        notes = FALLBACK_NOTES
-        redis_connected = False
-
-    return render_template_string(
-        HTML_TEMPLATE,
-        title=APP_TITLE,
-        version=APP_VERSION,
-        hostname=hostname,
-        visits=visits,
-        notes=notes,
-        redis_connected=redis_connected,
-        redis_host=REDIS_HOST,
-        redis_port=REDIS_PORT
-    )
-
-@app.route("/add", methods=["POST"])
-def add_note():
-    item = request.form.get("item", "").strip()
-    if item:
-        r = get_redis_client()
-        timestamp = datetime.now().strftime("%H:%M:%S")
-        entry = f"{item} (at {timestamp})"
-        if r:
-            try:
-                r.rpush("user_notes", entry)
-            except Exception:
-                FALLBACK_NOTES.append(entry)
-        else:
-            FALLBACK_NOTES.append(entry)
-    return redirect(url_for("index"))
-
-@app.route("/health", methods=["GET"])
-def health():
-    r = get_redis_client()
-    return jsonify({
-        "status": "healthy",
-        "app_version": APP_VERSION,
-        "hostname": socket.gethostname(),
-        "redis_connected": r is not None
-    }), 200
-
-@app.route("/api/info", methods=["GET"])
-def api_info():
-    global FALLBACK_VISITS
-    r = get_redis_client()
-    hostname = socket.gethostname()
-    if r:
-        try:
-            visits = int(r.get("page_views") or 0)
-            notes = r.lrange("user_notes", 0, -1)
-            redis_connected = True
-        except Exception:
-            visits = FALLBACK_VISITS
-            notes = FALLBACK_NOTES
-            redis_connected = False
-    else:
-        visits = FALLBACK_VISITS
-        notes = FALLBACK_NOTES
-        redis_connected = False
-
-    return jsonify({
-        "app_title": APP_TITLE,
-        "version": APP_VERSION,
-        "hostname": hostname,
-        "visits": visits,
-        "notes": notes,
-        "redis_connected": redis_connected,
-        "redis_host": REDIS_HOST
-    })
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
-
